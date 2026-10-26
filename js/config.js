@@ -80,6 +80,92 @@ window.BLOODLINK_BLOG_CONFIG = {
       }
     },
     {
+  slug: "safe-blood-donation-interval",
+  category: { en: "Donor Guide", bn: "রক্তদানের নির্দেশিকা" },
+  date: "2026-10-26",
+  readMinutes: 4,
+  image: "assets/blood-donation-interval.jpg",
+  imageAlt: {
+    en: "A calendar marking the safe interval between blood donations",
+    bn: "রক্তদানের নিরাপদ ব্যবধান চিহ্নিত করা একটি ক্যালেন্ডার"
+  },
+  title: {
+    en: "3 Months or 4 Months? How Long Should You Wait Before Donating Blood Again?",
+    bn: "৩ মাস নাকি ৪ মাস? কতদিন পর আবার রক্তদান করা নিরাপদ?"
+  },
+  excerpt: {
+    en: "Discover the WHO recommended intervals between blood donations for men and women, along with key health considerations and preparation steps.",
+    bn: "পুরুষ ও নারীদের জন্য WHO-এর সুপারিশকৃত রক্তদানের নিরাপদ ব্যবধান এবং গুরুত্বপূর্ণ স্বাস্থ্যগত বিষয়গুলো জেনে নিন।"
+  },
+  metaDescription: {
+    en: "Learn the WHO guidelines on blood donation intervals, potential health impacts of frequent donations, and essential preparation steps.",
+    bn: "রক্তদানের ব্যবধান সম্পর্কিত বিশ্ব স্বাস্থ্য সংস্থার (WHO) নির্দেশিকা, ঘন ঘন রক্তদানের প্রভাব এবং প্রয়োজনীয় প্রস্তুতি সম্পর্কে জানুন।"
+  },
+  ogImage: "https://YOUR-SITE-URL/assets/blood-donation-interval.jpg",
+  body: {
+    en: [
+      {
+        heading: "Understanding Donation Intervals",
+        paragraphs: [
+          "One common question about blood donation is how long a person should wait before donating blood again. Some people believe that three months is enough, while others think everyone must wait four months. So, what does the World Health Organization (WHO) say about this?",
+          "According to the WHO guideline 'Blood Donor Selection: Guidelines on Assessing Donor Suitability for Blood Donation', the minimum interval between whole blood donations is 12 weeks (about 3 months) for men and 16 weeks (about 4 months) for women.",
+          "However, these are minimum intervals. Simply waiting for the recommended period does not automatically mean someone is fit to donate blood. The donor's health and haemoglobin level must also be checked."
+        ]
+      },
+      {
+        heading: "Health Considerations of Frequent Donation",
+        paragraphs: [
+          "Donating blood too frequently without following proper guidelines may lead to health problems. A systematic review published in 2026 found that donating blood at shorter intervals may lower haemoglobin and ferritin levels.",
+          "Some studies also reported fatigue, dizziness, and temporary deferral from blood donation due to low haemoglobin levels. However, the certainty of the evidence from these studies was limited."
+        ]
+      },
+      {
+        heading: "Key Preparation Steps Before Donating",
+        bullets: [
+          "Get enough rest and eat your usual meals.",
+          "Drink plenty of water.",
+          "Get a health check and have your haemoglobin level checked.",
+          "If you feel unwell or have a medical condition, postpone your donation and seek medical advice.",
+          "Follow the recommended donation intervals and the advice of your blood bank or a blood transfusion specialist."
+        ]
+      },
+      {
+        callout: "Protecting the donor's health is just as important as donating blood. Following the recommended intervals and completing the necessary health checks helps protect both the donor and the recipient."
+      }
+    ],
+    bn: [
+      {
+        heading: "রক্তদানের নিরাপদ সময়সীমা ও ব্যবধান",
+        paragraphs: [
+          "রক্তদান সম্পর্কিত অত্যন্ত স্বাভাবিক একটি প্রশ্ন হলো, একবার রক্ত দেওয়ার কতদিন পর আবার দেওয়া যায়? কেউ মনে করেন তিন মাস যথেষ্ট, কেউ বলেন সবার জন্য চার মাস অপেক্ষা করতে হবে। এ বিষয়ে বিশ্ব স্বাস্থ্য সংস্থার (WHO) নির্দেশনা কী, তা জেনে নেওয়া যাক।",
+          "WHO-এর 'Blood Donor Selection: Guidelines on Assessing Donor Suitability for Blood Donation' অনুযায়ী, রক্তদানের ন্যূনতম ব্যবধান হওয়া উচিত পুরুষদের জন্য ১২ সপ্তাহ (প্রায় তিন মাস) এবং নারীদের জন্য ১৬ সপ্তাহ (প্রায় চার মাস) হওয়া উচিত।",
+          "তবে এটি ন্যূনতম ব্যবধান। এই সময় পার হলেই কেউ রক্তদানের উপযুক্ত হয়ে যান না। দাতার শারীরিক অবস্থা ও হিমোগ্লোবিনের মাত্রাও বিবেচনা করতে হয়।"
+        ]
+      },
+      {
+        heading: "ঘন ঘন রক্তদানের স্বাস্থ্যগত প্রভাব",
+        paragraphs: [
+          "স্বাস্থ্যবিধি অনুসরণ না করে ঘন ঘন রক্তদানের ফলে শারিরীক জটিলতার সৃষ্টি হতে পারে। ২০২৬ সালে প্রকাশিত একটি systematic review-তে দেখা গেছে, কম ব্যবধানে বারবার রক্তদান করলে হিমোগ্লোবিন ও ফেরিটিনের মাত্রা কমতে পারে।",
+          "কিছু গবেষণায় ক্লান্তি ও মাথা ঘোরার মতো সমস্যা এবং হিমোগ্লোবিন কম থাকায় সাময়িকভাবে রক্তদানে অযোগ্য বলে বিবেচিত হওয়ার ঘটনাও পাওয়া গেছে। তবে এসব গবেষণার প্রমাণের নিশ্চয়তা সীমিত।"
+        ]
+      },
+      {
+        heading: "রক্তদানের আগে প্রয়োজনীয় প্রস্তুতি",
+        bullets: [
+          "পর্যাপ্ত বিশ্রাম নিন এবং স্বাভাবিক খাবার খান।",
+          "পর্যাপ্ত পানি পান করুন।",
+          "স্বাস্থ্য পরীক্ষা করান এবং হিমোগ্লোবিনের মাত্রা যাচাই করুন।",
+          "অসুস্থ বোধ করলে বা চিকিৎসাগত সমস্যা থাকলে রক্তদান স্থগিত রেখে চিকিৎসকের পরামর্শ নিন।",
+          "ব্যবধানের বিষয়ে ব্লাড ব্যাংক বা রক্ত পরিসঞ্চালন বিশেষজ্ঞের নির্দেশনা মেনে চলুন।"
+        ]
+      },
+      {
+        callout: "রক্তদাতার সুস্থতা রক্ষা করাও রক্তদানের মতোই গুরুত্বপূর্ণ। সঠিক ব্যবধান মেনে এবং স্বাস্থ্য পরীক্ষার পর রক্তদান করলে দাতা ও গ্রহীতা, উভয়ের নিরাপত্তা নিশ্চিত হয়।"
+      }
+    ]
+  }
+},
+    {
       slug: "helping-a-blood-donor",
       category: { en: "Community", bn: "কমিউনিটি" },
       date: "2026-10-08",
