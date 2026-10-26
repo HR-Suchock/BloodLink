@@ -51,6 +51,26 @@
   };
   const slugFromURL = () => new URLSearchParams(location.search).get("slug");
   const getBlog = slug => blogs.find(b => b.slug === slug);
+  function setMeta(selector, attr, value) {
+    let el = document.querySelector(selector);
+    if (!el) { el = document.createElement("meta"); const [kind, key] = selector.match(/\[(name|property)="([^"]+)"\]/).slice(1); el.setAttribute(kind, key); document.head.appendChild(el); }
+    el.setAttribute(attr, value);
+  }
+  function setSEO(title, description, image, canonical) {
+    document.title = title;
+    setMeta('meta[name="description"]', "content", description);
+    setMeta('meta[property="og:title"]', "content", title);
+    setMeta('meta[property="og:description"]', "content", description);
+    setMeta('meta[property="og:image"]', "content", image);
+    setMeta('meta[property="og:url"]', "content", canonical);
+    setMeta('meta[name="twitter:title"]', "content", title);
+    setMeta('meta[name="twitter:description"]', "content", description);
+    setMeta('meta[name="twitter:image"]', "content", image);
+    let link = document.querySelector('link[rel="canonical"]');
+    if (!link) { link = document.createElement("link"); link.rel = "canonical"; document.head.appendChild(link); }
+    link.href = canonical;
+  }
+  const absoluteURL = value => new URL(value || "assets/bloodlink-logo.png", (config.siteUrl || location.origin).replace(/\/$/, "") + "/").href;
   const categoryNames = () => [...new Set(blogs.map(b => textOf(b.category)))];
   const blogCard = blog => `
     <article class="blog-card">
@@ -101,12 +121,10 @@
       const searchable = [textOf(blog.title), textOf(blog.excerpt), category, blog.slug].join(" ").toLocaleLowerCase();
       return topicOK && (!query || searchable.includes(query));
     }).sort((a,b) => b.date.localeCompare(a.date));
-    grid.innerHTML = visible.map(blogCard).join("");
+    grid.innerHTML = visible.length ? visible.map(blogCard).join("") : "";
     grid.hidden = visible.length === 0;
     const empty = document.getElementById("emptyState");
     if (empty) empty.hidden = visible.length !== 0;
-    const count = document.getElementById("articleCount");
-    if (count) count.textContent = String(blogs.length);
     const clear = document.getElementById("clearSearch");
     if (clear) clear.hidden = !input?.value;
   }
@@ -126,13 +144,15 @@
     if (!target) return;
     const blog = getBlog(slugFromURL());
     if (!blog) {
-      document.title = `${t("notFound")} | BloodLink Blog`;
+      setSEO(`${t("notFound")} | BloodLink Blog`, t("notFoundText"), absoluteURL(config.ogImage), absoluteURL("404.html"));
       target.innerHTML = `<div class="not-found"><div class="about-symbol" style="margin:0 auto">滴</div><h1>${escapeHTML(t("notFound"))}</h1><p>${escapeHTML(t("notFoundText"))}</p><a class="button-primary" style="display:inline-block" href="index.html">${escapeHTML(t("goHome"))}</a></div>`;
       const related = document.getElementById("relatedGrid"); if (related) related.innerHTML = "";
       return;
     }
     const title = textOf(blog.title);
-    document.title = `${title} | BloodLink Blog`;
+    const description = textOf(blog.metaDescription) || textOf(blog.excerpt) || `Read ${title} on BloodLink Blog.`;
+    const articleURL = absoluteURL(`blog.html?slug=${encodeURIComponent(blog.slug)}`);
+    setSEO(`${title} | BloodLink Blog`, description, absoluteURL(blog.ogImage || blog.image || config.ogImage), articleURL);
     const body = blog.body?.[language] || blog.body?.en || [];
     target.innerHTML = `
       <img class="article-hero-image" src="${escapeHTML(blog.image)}" alt="${escapeHTML(textOf(blog.imageAlt) || title)}" onerror="this.style.display='none'">
@@ -185,6 +205,9 @@
       selectedTopic = "all"; renderTopics(); renderBlogList();
     });
     initMenu();
+    if (document.getElementById("blogGrid")) {
+      setSEO("BloodLink Blog | Donate Blood, Save Lives", "Explore practical blood donation guides, donor stories, and reliable blood health information from BloodLink Blog.", absoluteURL(config.ogImage), absoluteURL("index.html"));
+    }
     applyLanguage();
   });
 })();

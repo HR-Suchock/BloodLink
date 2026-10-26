@@ -6,3 +6,10 @@
 /* Official BloodLink logo asset */
 .brand-logo{display:block;object-fit:contain;flex-shrink:0}.small-logo{width:36px;height:36px;border-radius:11px}.menu-logo{width:58px;height:58px;border-radius:18px}.hero-logo-image{width:84px;height:84px;border-radius:25px;box-shadow:0 10px 24px #17203317}.about-logo-image{object-fit:cover;border-radius:17px}
 @media(max-width:760px){.small-logo{width:30px;height:30px;border-radius:9px}.menu-logo{width:50px;height:50px;border-radius:15px}.hero-logo-image{width:64px;height:64px;border-radius:19px}}
+
+/* Updates: removed decorative hero/menu sections; keep compact header and useful loading feedback. */
+.brand-mini{display:none!important}
+.loading-state{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:12px;min-height:150px;color:var(--muted);font-weight:700;background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px}
+.loading-spinner{width:22px;height:22px;border:3px solid #f3c7cc;border-top-color:var(--red);border-radius:50%;animation:bl-spin .8s linear infinite;display:inline-block}
+@keyframes bl-spin{to{transform:rotate(360deg)}}
+.footer a[href="privacy.html"]{color:var(--red);font-weight:700;text-decoration:underline;margin-left:4px}

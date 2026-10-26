@@ -11,9 +11,13 @@
   { callout: "A short highlighted note." }
 
   Replace image URLs with your own files, e.g. "assets/my-donation-photo.jpg".
+  Optional per-article SEO fields: metaDescription: { en: "...", bn: "..." }, ogImage: "assets/cover.jpg".
 */
 window.BLOODLINK_BLOG_CONFIG = {
   siteName: "BloodLink Blog",
+  siteUrl: "https://suchock.github.io",
+  ogImage: "https://suchock.github.io/assets/bloodlink-logo.png",
+  googleAnalyticsId: "G-XXXXXXXXXX",
   reportEmail: "bloodlink@example.com",
   defaultLanguage: "en",
   blogs: [
