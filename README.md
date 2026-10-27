@@ -1,6 +1,6 @@
 # BloodLink Blog — Complete Owner's Manual
 
-This README is the main guide for editing, publishing, measuring, and maintaining the BloodLink Blog website. You do not need to create a new HTML page for every article. The site is a static HTML/CSS/JavaScript project; article content is stored in `js/config.js`.
+This README is the main guide for editing, publishing, measuring, and maintaining the BloodLink Blog website. You do not need to create a new HTML page for every article. The site is a static HTML/CSS/JavaScript project; article content is stored in `js/articles.js`; website settings are stored separately in `js/config.js`.
 
 > **Important:** Make a backup of the current website folder before making changes. After editing, test the site locally, then upload/publish the whole project folder.
 
@@ -38,14 +38,16 @@ BloodLink-Blog/
 ├── css/
 │   └── style.css    Colors, layout, cards, mobile styling, loading indicators
 ├── js/
-│   ├── config.js    Main owner settings and all blog content
+│   ├── config.js    Website settings: URL, Analytics ID, report email, language
+│   ├── articles.js  All published blog articles (edit this for normal publishing)
 │   └── app.js       Search, filters, menu, language, rendering, page metadata
 ├── assets/
 │   └── bloodlink-logo.png
+├── ARTICLE-TEMPLATE.js  Copy-and-paste starter template for new articles
 └── README.md        This owner's manual
 ```
 
-**The first file to edit for normal website management is `js/config.js`.** Use a plain-text/code editor such as Visual Studio Code. Do not edit files in a word processor such as Microsoft Word.
+**For normal publishing, edit `js/articles.js` and use `ARTICLE-TEMPLATE.js`. Edit `js/config.js` only for website-wide settings.** Use a plain-text/code editor such as Visual Studio Code. Do not edit files in a word processor such as Microsoft Word.
 
 ## 2. Edit the website on your computer
 
@@ -53,7 +55,7 @@ BloodLink-Blog/
 
 1. Download the latest project ZIP and extract it.
 2. Open the extracted `BloodLink-Blog` folder in Visual Studio Code.
-3. Open `js/config.js` to edit articles and site settings.
+3. Open `ARTICLE-TEMPLATE.js` for the article template, then add the copied article object to `js/articles.js`. Open `js/config.js` only for website-wide settings.
 4. Open `index.html` with the VS Code **Live Server** extension to test the website. If you open files by double-clicking them, some browser features and URL behaviour may not work as expected.
 5. Check the homepage, open an article, test search, switch English/Bangla, open the menu, and check the privacy and 404 pages.
 
@@ -88,11 +90,11 @@ For a project repository such as `username.github.io/repository-name/`, the publ
 
 ## 4. Add, edit, or remove a blog
 
-Open `js/config.js`. Find the `blogs` array. Every article is one object inside this array.
+Open `ARTICLE-TEMPLATE.js` to get a ready-made article structure. Published article objects live in the `window.BLOODLINK_BLOGS` array inside `js/articles.js`.
 
 ### Add a blog
 
-Copy an existing article object, paste it inside the `blogs` array, and change all of its values. Make sure objects are separated with commas. Keep the final object's trailing comma valid JavaScript (modern browsers accept it).
+Copy the object from `ARTICLE-TEMPLATE.js`, paste it inside the `window.BLOODLINK_BLOGS` array in `js/articles.js`, and change all of its values. Make sure objects are separated with commas. Keep the final object's trailing comma valid JavaScript (modern browsers accept it).
 
 Example structure:
 
@@ -175,20 +177,58 @@ This is a template example; replace the example URL, image, content, and date wi
 - `imageAlt`: describe the meaningful content of the image in English and Bangla. Do not stuff it with keywords.
 - `title`, `excerpt`: write both English and Bangla versions.
 - `metaDescription`: recommended for each article. Write a clear, unique summary; it is a search-result description suggestion, not a guaranteed snippet.
-- `ogImage`: ideally a publicly accessible, absolute HTTPS URL to an image suitable for sharing. If you use a local image, make sure the site code resolves it to the correct live URL.
+- `ogImage`: an optional **Open Graph image** used as the preview picture when someone shares an article link in apps such as Facebook, Messenger, WhatsApp, or other social platforms. It is not the article's main image itself; it tells link-preview crawlers which image to show. Use a full public HTTPS URL, for example `https://your-real-domain.com/assets/donation-preparation.jpg`. The image must load without signing in. A wide image around 1200 × 630 pixels is a useful general choice. If you leave `ogImage` empty, this website falls back to the article's `image`, then to the site's default image. `ogImage` is optional for the site to work, but recommended if you want a deliberate, attractive share preview. Social apps may cache previews, and some crawlers may not read JavaScript-generated article metadata; see Section 9 for the limitation and testing advice.
 - `body.en` and `body.bn`: article content for both languages. Supported block types include `heading` + `paragraphs`, `heading` + `bullets`, and `callout`.
 
-### Article URL
+### Article URL — how it works, and where to change your website address
 
-The current template uses a query URL such as:
+Each article uses the same `blog.html` template. The article is identified by its unique `slug`, so the URL looks like this:
 
 `https://YOUR-SITE-URL/blog.html?slug=healthy-donation-preparation`
 
-Replace `YOUR-SITE-URL` with the real domain and path. You do not need to create a new HTML file for each article.
+You **do not** make a separate HTML file for every article, and you **do not** need to change the URL inside every article object.
+
+#### Set the base website URL in one place
+
+1. Open `js/config.js`.
+2. Find this line:
+
+   ```js
+   siteUrl: "https://suchock.github.io",
+   ```
+3. Replace only the URL inside the quotes with your real public website's base URL, then save.
+
+Examples:
+
+- If your site opens at `https://suchock.github.io/`, use `siteUrl: "https://suchock.github.io"`.
+- If it opens at `https://suchock.github.io/bloodlink-blog/`, use `siteUrl: "https://suchock.github.io/bloodlink-blog"` (include the repository subpath).
+- If you use a custom domain such as `https://blog.example.com/`, use `siteUrl: "https://blog.example.com"`.
+
+Do not add `blog.html` or a slug to `siteUrl`; it should be the base address only, without a trailing slash. The app uses this setting to build the absolute article canonical URL and metadata URL. The links between the homepage and articles are relative links, so you don't have to edit each card or article when the domain changes.
+
+#### What still needs updating after a domain or repository-path change?
+
+Some files are static and cannot automatically update themselves from `config.js`. After changing your public address, update these **one-time website-wide settings**:
+
+- `sitemap.xml`: change the domain/path in every `<loc>` URL.
+- `robots.txt`: change the `Sitemap:` URL.
+- `index.html`, `blog.html`, `privacy.html`, and `404.html`: update their default canonical/Open Graph URLs and any absolute asset URLs if present.
+- Google Search Console: verify the correct public property and submit the sitemap again if needed.
+- Google Analytics: confirm the web data stream website URL is correct.
+
+You do **not** have to edit these files every time you publish a new article. Only update the sitemap when adding/removing article URLs, and update static metadata when the site's base address changes.
+
+#### Example of a final article URL
+
+If your site base is `https://suchock.github.io` and the article slug is `healthy-donation-preparation`, the URL is:
+
+`https://suchock.github.io/blog.html?slug=healthy-donation-preparation`
+
+If your site is published in a repository subfolder, include that folder in the base URL. Always copy the real address from the browser after the site is deployed and test it in a private/incognito tab.
 
 ### Edit a blog
 
-Find the object with the matching `slug` in `js/config.js`, then change its title, excerpt, date, image, metadata, or body. Keep the slug the same if you want to preserve its existing link.
+Find the object with the matching `slug` in `js/articles.js`, then change its title, excerpt, date, image, metadata, or body. Keep the slug the same if you want to preserve its existing link.
 
 ### Remove a blog
 
@@ -197,6 +237,30 @@ Remove that article object from the `blogs` array, taking care not to delete a c
 ### Health information quality
 
 Blood donation eligibility and medical decisions vary by person and location. Use reputable sources, cite them in articles where appropriate, and have medical claims checked by qualified healthcare professionals. The blog is educational and must not replace professional medical advice.
+
+### Easier publishing: use the article template file
+
+You do not need to write the HTML for each article. Follow this routine every time:
+
+1. Open `ARTICLE-TEMPLATE.js` in a code editor.
+2. Copy the complete object between the outer `{` and `}` (do not copy the explanatory comment at the top).
+3. Open `js/articles.js` and find the `window.BLOODLINK_BLOGS = [` list.
+4. Paste the copied object before the final closing `];`. Add a comma after the previous article object if it does not already have one.
+5. Replace the sample `slug`, title, category, date, image, alt text, excerpt, metadata, and article body in both English and Bangla.
+6. Save the file, preview the homepage, search for a phrase from the new article, and open its article link.
+7. Add its URL to `sitemap.xml`, then upload all changed files to GitHub.
+
+**Important:** `ARTICLE-TEMPLATE.js` is a starter template, not a published article and not a file that the website loads. The live website automatically displays objects added to `js/articles.js`. This is how a static GitHub Pages site works without a server or database.
+
+You can use these block types in `body.en` and `body.bn`:
+
+```js
+{ heading: "Section heading", paragraphs: ["Paragraph one.", "Paragraph two."] }
+{ heading: "Key points", bullets: ["First point", "Second point"] }
+{ callout: "Important highlighted note." }
+```
+
+Use a unique slug such as `how-to-help-a-donor`. Do not use spaces, uppercase letters, or reuse another article's slug. Put the image file in `assets/` and make sure the image path and alt text are correct.
 
 ## 5. Images and accessible alt text
 
@@ -235,7 +299,7 @@ Open `js/app.js` and find the `copy` object. The `en` section contains English i
 
 ### Change the website's main settings
 
-Open the top of `js/config.js`. Current settings include:
+Open `js/config.js`. Current settings include:
 
 ```js
 siteName: "BloodLink Blog",
@@ -247,6 +311,13 @@ defaultLanguage: "en",
 ```
 
 Change these to the real deployed website URL, public share image, Google Analytics Measurement ID, and support email. Keep the quotes and commas. The Analytics ID is also written directly in the HTML pages in this version, so follow Section 12 and update each page as described there.
+
+### What are `siteUrl` and `ogImage`?
+
+- **`siteUrl`** is the base public address of your website. Set it once in `js/config.js`. The code uses it to construct canonical and article metadata URLs. Do not put a particular article's slug in this setting.
+- **`ogImage`** is the default image used for social link previews when sharing the homepage or an article without its own `ogImage`. It should be a public, absolute HTTPS URL. It does not create or upload the image: you must put the image in `assets/` and point to its public URL. For an article-specific preview, set `ogImage` on that article in `js/articles.js`. If omitted/empty, the article image is used as a fallback.
+
+You normally change `siteUrl` only if the website's domain or repository path changes, not when adding an article. For every new article, give it a unique `slug`; the URL is built automatically from the base URL and that slug. The sitemap is a separate static file, however, so add the new article URL to `sitemap.xml` as explained in Section 10.
 
 ## 7. Edit the three-line menu
 
@@ -314,7 +385,7 @@ Use a unique title and natural summary that accurately describe the page. Do not
 
 ### Article metadata
 
-For each article, add `metaDescription.en` and `metaDescription.bn` in its object in `js/config.js`. Also add `ogImage` if you want a particular social preview image. The article renderer sets metadata in the browser for the selected article.
+For each article, add `metaDescription.en` and `metaDescription.bn` in its object in `js/articles.js`. Also add `ogImage` if you want a particular social preview image. The article renderer sets metadata in the browser for the selected article.
 
 **Important technical limitation:** Because all article URLs share `blog.html` and article metadata is set by JavaScript after page load, some search/social crawlers may only see the generic initial `blog.html` metadata. If you need reliably unique metadata for every article in every crawler, use a build process that generates a separate static HTML file per article or move to a server-rendered/static-site generator setup. Search Console URL inspection can help you see what Google can render, but it does not guarantee that every crawler behaves the same way.
 
@@ -343,8 +414,8 @@ Open Graph metadata helps apps such as Facebook and Messenger create a preview w
 1. Create a clean BloodLink-branded preview image. A wide image around **1200 × 630 pixels** is a useful general target.
 2. Upload it to a public location, for example `assets/bloodlink-social.jpg`.
 3. Use the full absolute HTTPS URL in the metadata, for example `https://YOUR-REAL-DOMAIN/assets/bloodlink-social.jpg`.
-4. Update `ogImage` in `js/config.js` and the `og:image` / `twitter:image` tags in the relevant HTML files.
-5. For individual articles, set the article's `ogImage` in `js/config.js`.
+4. Upload the image to `assets/` and set `ogImage` in `js/config.js` to its full public HTTPS URL. Update the default `og:image` / `twitter:image` tags in the static HTML files as well, so they have a good fallback before JavaScript runs.
+5. For individual articles, set that article's `ogImage` in `js/articles.js`. This is optional: when empty, the article's main `image` is used as the fallback.
 
 The image must be publicly accessible without login. A local computer path will not work for visitors or crawlers. Some social platforms cache previews, so changes may take time to appear.
 
@@ -476,9 +547,16 @@ Never claim the site does not use analytics after you have enabled GA4. Keep the
 
 ## 13. 404 page and privacy policy
 
-### Custom 404 page
+### Custom 404 page and offline mini-games
 
 `404.html` is the themed error page for visitors who request a page that does not exist. GitHub Pages serves a root `404.html` for missing pages. Test it after publishing by opening a made-up path such as `https://YOUR-REAL-DOMAIN/this-page-should-not-exist`. Some local preview servers may show their own error page instead.
+
+The 404 page also includes two small games that run locally in the browser without game libraries or network requests:
+
+- **Blood Drop Catch:** tap/click the falling blood drops before the timer ends. Use Start/Restart to play again.
+- **Blood Group Memory:** flip cards and find matching blood-group symbols. Match all pairs to finish.
+
+The game code and styles are inside `404.html`, so you do not need to install anything or upload additional game files. The games are for entertainment only and do not provide medical advice. Test the games on both mobile and desktop after publishing.
 
 ### Privacy policy
 
@@ -492,16 +570,20 @@ A starter privacy page is not legal advice and may not satisfy every legal requi
 
 The article renderer includes a loading status while content is prepared. Test with a normal article and a slug that does not exist. A missing article should show a not-found message rather than an endless spinner.
 
+### Search bar behavior
+
+The search field filters articles as the visitor types. It searches article titles, summaries, categories, slugs, metadata, and article text in both languages. The × button clears the query; on a keyboard, Escape clears it too. If search results seem wrong, check that the article text is present in `js/articles.js`, then refresh the published page after deployment.
+
 ### Common issues
 
 **Article is missing from the homepage**
-- Check that its object is inside `blogs` in `js/config.js`.
+- Check that its object is inside `window.BLOODLINK_BLOGS` in `js/articles.js`.
 - Check commas, quotes, braces, and brackets.
 - Check that the browser console has no JavaScript errors.
 
 **Article link opens “Article not found”**
 - Ensure the URL slug matches the article's `slug` exactly.
-- Check that `js/config.js` is loading and the URL uses the correct deployment path.
+- Check that both `js/config.js` and `js/articles.js` load and the URL uses the correct deployment path.
 
 **Image is broken**
 - Check the spelling and capitalization of the filename.
@@ -530,6 +612,10 @@ The article renderer includes a loading status while content is prepared. Test w
 - Replace the placeholder ID in all four HTML pages and `js/config.js`.
 - Confirm you are checking the matching GA4 property.
 - Check privacy/consent settings, browser blockers, and the deployed source.
+
+### Brand size and search-bar design
+
+The homepage hero logo and title are intentionally smaller on mobile, with reduced vertical spacing. The search bar is a single clean white field with a simple red magnifier, focus styling, and a clear button. These refinements live at the end of `css/style.css`; keep the final override block when editing the stylesheet. The search JavaScript in `js/app.js` searches article bodies as well as titles and summaries.
 
 ## 15. Before every release checklist
 

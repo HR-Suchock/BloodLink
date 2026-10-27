@@ -13,3 +13,25 @@
 .loading-spinner{width:22px;height:22px;border:3px solid #f3c7cc;border-top-color:var(--red);border-radius:50%;animation:bl-spin .8s linear infinite;display:inline-block}
 @keyframes bl-spin{to{transform:rotate(360deg)}}
 .footer a[href="privacy.html"]{color:var(--red);font-weight:700;text-decoration:underline;margin-left:4px}
+
+/* Compact mobile-first refinements: smaller brand, tighter spacing, stable search. */
+[hidden]{display:none!important}
+.hero{padding:24px 0 8px}
+.hero-logo{gap:14px}
+.hero-logo-image{width:64px;height:64px;border-radius:19px;box-shadow:none}
+.hero h1{font-size:clamp(34px,5.5vw,54px);letter-spacing:-2px}
+.tagline{font-size:clamp(15px,2vw,20px);margin:10px 0 12px}
+.welcome-row{margin:22px 0 18px}
+.search-panel{background:transparent;border:0;border-radius:0;padding:0;margin:0 0 28px;box-shadow:none}
+.search-box{height:52px;background:#fff;border:1px solid #dfe5ed;border-radius:14px;padding:0 14px;gap:10px;box-shadow:0 2px 8px #14233b05;transition:border-color .18s,box-shadow .18s}
+.search-box:focus-within{border-color:#d65b66;box-shadow:0 0 0 3px #c9001212}
+.search-icon{font-size:0;transform:none;width:17px;height:17px;position:relative;flex:0 0 17px}
+.search-icon:before{content:"";position:absolute;width:10px;height:10px;border:2px solid var(--red);border-radius:50%;left:0;top:0}
+.search-icon:after{content:"";position:absolute;width:7px;height:2px;background:var(--red);border-radius:2px;transform:rotate(45deg);left:10px;top:12px}
+.search-box input{min-width:0;font-size:15px;padding:0;appearance:none;-webkit-appearance:none}
+.search-box input::-webkit-search-cancel-button,.search-box input::-webkit-search-decoration{-webkit-appearance:none;appearance:none}
+.search-box input:focus{outline:none}
+.clear-search{width:28px;height:28px;display:grid;place-items:center;flex:0 0 28px;font-size:18px;line-height:1}
+.clear-search[hidden]{display:none!important}
+@media(max-width:760px){.hero{padding:20px 0 6px}.hero-logo{gap:11px}.hero-logo-image{width:54px;height:54px;border-radius:16px}.hero h1{font-size:clamp(31px,8vw,43px);letter-spacing:-1.6px}.tagline{margin:8px 0 10px;font-size:15px}.welcome-row{margin:18px 0 16px}.search-panel{margin-bottom:25px}.search-box{height:50px;border-radius:13px;padding:0 13px}.search-box input{font-size:14px}}
+@media(max-width:390px){.hero-logo-image{width:48px;height:48px}.hero h1{font-size:30px}.hero-logo{gap:9px}.tagline{font-size:14px}}

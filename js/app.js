@@ -1,6 +1,6 @@
 (() => {
   const config = window.BLOODLINK_BLOG_CONFIG || { blogs: [], defaultLanguage: "en" };
-  const blogs = config.blogs || [];
+  const blogs = window.BLOODLINK_BLOGS || config.blogs || [];
   const copy = {
     en: {
       menuSubtitle:"Donate Blood, Save Lives",home:"Home",allBlogs:"All blogs",about:"About BloodLink Blog",
@@ -75,7 +75,7 @@
   const blogCard = blog => `
     <article class="blog-card">
       <a href="blog.html?slug=${encodeURIComponent(blog.slug)}" aria-label="${escapeHTML(textOf(blog.title))}">
-        <img class="card-image" src="${escapeHTML(blog.image)}" alt="${escapeHTML(textOf(blog.imageAlt) || textOf(blog.title))}" loading="lazy" onerror="this.style.display='none'">
+        <img class="card-image" src="${escapeHTML(blog.image)}" alt="${escapeHTML(textOf(blog.imageAlt) || textOf(blog.title))}" loading="lazy" decoding="async" onerror="this.style.display='none'">
       </a>
       <div class="card-body">
         <div class="card-meta"><span class="category-label">${escapeHTML(textOf(blog.category))}</span><span>${escapeHTML(dateText(blog.date))}</span><span>· ${blog.readMinutes} ${escapeHTML(t("minRead"))}</span></div>
@@ -118,7 +118,10 @@
     const visible = blogs.filter(blog => {
       const category = textOf(blog.category);
       const topicOK = selectedTopic === "all" || category === selectedTopic;
-      const searchable = [textOf(blog.title), textOf(blog.excerpt), category, blog.slug].join(" ").toLocaleLowerCase();
+      const bodyText = Object.values(blog.body || {}).flat().map(block =>
+        [block.heading || "", ...(block.paragraphs || []), ...(block.bullets || []), block.callout || ""].join(" ")
+      ).join(" ");
+      const searchable = [textOf(blog.title), textOf(blog.excerpt), category, blog.slug, textOf(blog.metaDescription), bodyText].join(" ").toLocaleLowerCase();
       return topicOK && (!query || searchable.includes(query));
     }).sort((a,b) => b.date.localeCompare(a.date));
     grid.innerHTML = visible.length ? visible.map(blogCard).join("") : "";
@@ -155,7 +158,7 @@
     setSEO(`${title} | BloodLink Blog`, description, absoluteURL(blog.ogImage || blog.image || config.ogImage), articleURL);
     const body = blog.body?.[language] || blog.body?.en || [];
     target.innerHTML = `
-      <img class="article-hero-image" src="${escapeHTML(blog.image)}" alt="${escapeHTML(textOf(blog.imageAlt) || title)}" onerror="this.style.display='none'">
+      <img class="article-hero-image" src="${escapeHTML(blog.image)}" alt="${escapeHTML(textOf(blog.imageAlt) || title)}" decoding="async" onerror="this.style.display='none'">
       <header class="article-header">
         <div class="card-meta"><span class="category-label">${escapeHTML(textOf(blog.category))}</span><span>${escapeHTML(t("published"))} ${escapeHTML(dateText(blog.date))}</span><span>· ${blog.readMinutes} ${escapeHTML(t("minRead"))}</span></div>
         <h1>${escapeHTML(title)}</h1>
@@ -199,6 +202,9 @@
     document.getElementById("year") && (document.getElementById("year").textContent = new Date().getFullYear());
     document.querySelectorAll("[data-lang]").forEach(btn => btn.addEventListener("click", () => setLanguage(btn.dataset.lang)));
     document.getElementById("searchInput")?.addEventListener("input", renderBlogList);
+    document.getElementById("searchInput")?.addEventListener("keydown", event => {
+      if (event.key === "Escape") { event.currentTarget.value = ""; renderBlogList(); event.currentTarget.blur(); }
+    });
     document.getElementById("clearSearch")?.addEventListener("click", () => { const input = document.getElementById("searchInput"); input.value = ""; renderBlogList(); input.focus(); });
     document.getElementById("resetSearch")?.addEventListener("click", () => {
       const input = document.getElementById("searchInput"); if (input) input.value = "";
