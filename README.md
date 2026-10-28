@@ -650,3 +650,87 @@ Use this list before publishing a change:
 ---
 
 **Owner's rule:** If you change the public domain, update `siteUrl` and `ogImage` in `js/config.js`, the canonical and social metadata in the HTML files, every URL in `sitemap.xml`, the sitemap address in `robots.txt`, and the URL configured in Google Analytics/Search Console.
+
+
+## 17. 404 page: styling, logo, links, and mini-games
+
+The `404.html` page is now **self-contained**: its layout and game styles are written inside that file, so it does not rely on `css/style.css` loading correctly. The BloodLink logo is embedded directly in the HTML as an image data URL, preventing a broken logo path on the error page. The page links back to the homepage and to `privacy.html`; the two mini-games run locally in the browser and do not need an external game library.
+
+### If your GitHub Pages site is at the domain root
+
+For a site like `https://suchock.github.io/`, leave this setting in `404.html` as:
+
+```js
+const SITE_BASE_PATH = '';
+```
+
+### If your site is in a repository subfolder
+
+For a project URL like `https://username.github.io/my-blog/`, set it to the repository path (include the leading slash, but not a trailing slash):
+
+```js
+const SITE_BASE_PATH = '/my-blog';
+```
+
+This setting updates the 404 page's Home links. The rest of the site's pages and metadata should also use the correct project path if you publish under a repository subfolder.
+
+### Test the page after publishing
+
+1. Confirm `404.html` is in the same published root as `index.html`.
+2. Open a deliberately nonexistent URL on the live site.
+3. Confirm the red header, logo, background, cards, and footer are styled even if `css/style.css` is unavailable.
+4. Click **Back to BloodLink Blog** and **Privacy Policy** to check the links.
+5. Start Blood Drop Catch and tap the drop; restart Blood Group Memory and match the pairs.
+6. On a computer, inspect the main document's HTTP status in DevTools → Network. A proper not-found response should normally return status `404`.
+
+If the logo is changed in the main site later, replace the embedded image in `404.html` too, or ask for the 404 page to be regenerated with the new logo.
+
+
+## 404 mini-game: BloodLink Rescue Rush
+
+The first game on `404.html` is now **BloodLink Rescue Rush**, replacing the simple tap-the-drop game. Start a 30-second round, move the BloodLink basket left/right using the arrow keys or on-screen controls, catch red blood drops (+10 points), and avoid green germs (lose one of three lives). The game is drawn on a local HTML canvas and uses no external libraries or network requests. The second Blood Group Memory game remains available.
+
+To adjust the game, edit the first game markup, the `.rescue-*` CSS rules, or the `BloodLink Rescue Rush` JavaScript section inside `404.html`. Keep the element IDs consistent (`rescue-start`, `rescue-canvas`, `rescue-status`, `rescue-left`, `rescue-right`, and `rescue-arena`). After changes, test on both a phone and a computer.
+
+
+### 404 mini-game titles look blank or have low contrast
+
+The game title bars in `404.html` use white text on the BloodLink red background. Keep `.game-card h3` text color as `#fff` and its background as `#c90012`. Avoid adding a later `.game-card h3` rule that changes the text to red, because it will override the contrast styling. On mobile, the heading margin is adjusted to match the card's smaller padding.
+
+
+## 17. Fixing 404 page navigation (Back, Home, and Privacy Policy)
+
+The 404 page uses three different navigation behaviours:
+
+- **Back arrow (←):** returns to the previous page when the visitor arrived from the same website. If the visitor opened the 404 page directly, the arrow falls back to the homepage.
+- **Home:** always opens the BloodLink Blog homepage.
+- **Back to BloodLink Blog:** also opens the homepage.
+- **Privacy Policy:** opens `privacy.html`.
+
+### Why links can fail on GitHub Pages
+
+A URL beginning with `/`, such as `/index.html`, points to the domain root. That works for a user site such as `https://suchock.github.io/`, but a project site hosted under `https://username.github.io/repository-name/` needs the repository prefix. The updated `404.html` rewrites the links to include the base path. It recognises `suchock.github.io` as a root site and attempts to detect the first path segment for other GitHub Pages project sites.
+
+### If your website is published in a subfolder
+
+Open `404.html` and find this line in its navigation script:
+
+```js
+const MANUAL_BASE_PATH = '';
+```
+
+For a project URL like `https://username.github.io/BloodLink-Blog/`, change it to:
+
+```js
+const MANUAL_BASE_PATH = '/BloodLink-Blog';
+```
+
+Use the exact repository path, with no trailing slash. For `https://suchock.github.io/`, leave it empty (`''`). Then commit the updated `404.html`.
+
+### Test all four links after publishing
+
+1. Open a fake URL on your live site so the 404 page appears.
+2. Click **Home** and **Back to BloodLink Blog**; both should open the homepage.
+3. Click **Privacy Policy** in the footer; it should open `privacy.html`.
+4. Open the fake URL by clicking a broken link from within your site, then click the arrow; it should return to the previous same-site page. If you type the fake URL directly, the arrow should take you to the homepage.
+5. If a link still fails, check the deployed URL and `MANUAL_BASE_PATH`, and confirm `index.html` and `privacy.html` exist in the published root.

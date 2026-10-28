@@ -56,9 +56,9 @@
 </head>
 <body>
   <header class="topbar">
-    <a class="icon-button menu-button" href="/index.html" data-site-path="/index.html" aria-label="Back to homepage" style="text-decoration:none">←</a>
+    <a class="icon-button menu-button" id="back-button" href="/index.html" data-site-path="/index.html" aria-label="Go back to the previous page" title="Go back" style="text-decoration:none">←</a>
     <div style="font-weight:850;color:#fff">BloodLink Blog</div>
-    <div class="language-switch"><a class="lang-button active" href="/index.html" data-site-path="/index.html">Home</a></div>
+    <div class="language-switch"><a class="lang-button active" id="home-button" href="/index.html" data-site-path="/index.html">Home</a></div>
   </header>
   <main class="error-wrap">
     <section class="error-hero" aria-labelledby="error-title">
@@ -66,13 +66,13 @@
       <p class="eyebrow">ERROR 404</p>
       <h1 id="error-title">This page went missing.</h1>
       <p>The link may be incorrect or the page may have moved. You can return to BloodLink articles—or take a short break with one of these tiny offline games.</p>
-      <div class="error-actions"><a class="button-primary" href="/index.html" data-site-path="/index.html" style="display:inline-block;text-decoration:none">Back to BloodLink Blog</a></div>
+      <div class="error-actions"><a class="button-primary" id="back-home-button" href="/index.html" data-site-path="/index.html" style="display:inline-block;text-decoration:none">Back to BloodLink Blog</a></div>
     </section>
 
     <h2 class="game-heading">While you're here, play a little</h2>
     <section class="game-grid" aria-label="Offline mini-games">
       <article class="game-card rescue-card">
-        <h3> BloodLink Rescue Rush</h3>
+        <h3>BloodLink Rescue Rush</h3>
         <p>Collect BloodLink-red drops, avoid contaminated sample markers, and beat your best score. A clean red-and-white mini arcade game.</p>
         <button class="game-button" id="rescue-start" type="button">Start rescue</button>
         <div class="game-status" id="rescue-status" aria-live="polite">30 seconds · Score: 0 · Lives: 3</div>
@@ -98,13 +98,48 @@
   <footer class="footer"><a href="/index.html" data-site-path="/index.html" class="footer-brand">BloodLink <span>Blog</span></a><p>Donate blood. Share knowledge. Save lives.</p><small>© 2026 BloodLink Blog · <a href="/privacy.html" data-site-path="/privacy.html">Privacy Policy</a></small></footer>
 
   <script>
-  // GitHub Pages setup: leave empty for https://username.github.io/ .
-  // For a project site like https://username.github.io/repository/ use '/repository'.
+  // Navigation that works on a GitHub Pages user site or a project subpath.
+  // This site is normally https://suchock.github.io/ (no repository prefix).
+  // If you publish under a custom subfolder, set BLOODLINK_SITE_BASE_PATH below,
+  // for example '/BloodLink-Blog'. Keep '' for the root site.
   (() => {
-    const SITE_BASE_PATH = '';
+    const MANUAL_BASE_PATH = '';
+    const host = location.hostname.toLowerCase();
+    const pathParts = location.pathname.split('/').filter(Boolean);
+    let detectedBasePath = '';
+
+    // Known user site: its base is the domain root, even when the requested URL is fake.
+    if (host === 'suchock.github.io') {
+      detectedBasePath = '';
+    } else if (host.endsWith('.github.io') && pathParts.length > 1) {
+      // GitHub Pages project sites normally use /repository-name/ as the first segment.
+      detectedBasePath = '/' + pathParts[0];
+    }
+
+    const configuredBasePath = window.BLOODLINK_SITE_BASE_PATH;
+    const basePath = String(configuredBasePath ?? (MANUAL_BASE_PATH || detectedBasePath))
+      .replace(/\/$/, '');
+
     document.querySelectorAll('[data-site-path]').forEach(link => {
-      link.href = SITE_BASE_PATH + link.dataset.sitePath;
+      const destination = link.dataset.sitePath || '/index.html';
+      link.href = basePath + (destination.startsWith('/') ? destination : '/' + destination);
     });
+
+    // The arrow means browser-back when the visitor came from this website.
+    // If the 404 page was opened directly, send them to the homepage instead.
+    const backButton = document.getElementById('back-button');
+    if (backButton) {
+      backButton.addEventListener('click', event => {
+        const sameSiteReferrer = (() => {
+          try { return document.referrer && new URL(document.referrer).origin === location.origin; }
+          catch (_) { return false; }
+        })();
+        if (sameSiteReferrer && history.length > 1) {
+          event.preventDefault();
+          history.back();
+        }
+      });
+    }
   })();
   </script>
   <script>
