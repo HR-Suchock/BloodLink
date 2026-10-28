@@ -3,7 +3,7 @@ BLOODLINK BLOG ARTICLE TEMPLATE
 Copy the object below into the array in js/articles.js. Do not replace js/articles.js with this file.
 After copying, change every example value and keep a comma between article objects.
 */
-{
+const ARTICLE_TEMPLATE = {
   slug: "replace-with-unique-lowercase-slug",
   category: { en: "Donor Guide", bn: "রক্তদানের নির্দেশিকা" },
   date: "2026-10-28",
@@ -26,4 +26,4 @@ After copying, change every example value and keep a comma between article objec
       { callout: "ঐচ্ছিক গুরুত্বপূর্ণ নোট। স্বাস্থ্যসংক্রান্ত তথ্য যোগ্য পেশাজীবীর মাধ্যমে যাচাই করুন।" }
     ]
   }
-}
+};

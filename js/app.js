@@ -37,7 +37,8 @@
       allTopics:"সব বিষয়",shareCopied:"ওয়েবসাইটের লিংক কপি হয়েছে।",shareUnavailable:"শেয়ার করতে এই লিংকটি কপি করুন:"
     }
   };
-  let language = localStorage.getItem("bloodlinkBlogLanguage") || config.defaultLanguage || "en";
+  let language = config.defaultLanguage || "en";
+  try { language = localStorage.getItem("bloodlinkBlogLanguage") || language; } catch (_) {}
   if (!copy[language]) language = "en";
   let selectedTopic = "all";
 
@@ -51,6 +52,16 @@
   };
   const slugFromURL = () => new URLSearchParams(location.search).get("slug");
   const getBlog = slug => blogs.find(b => b.slug === slug);
+  // Only use HTTPS remote images or ordinary local paths; reject executable/data URL schemes.
+  const safeImageURL = value => {
+    const raw = String(value || "").trim();
+    if (/^https:\/\//i.test(raw) || /^(assets\/|\.\/|\.\.\/|\/)[^\s]*$/i.test(raw)) return raw;
+    return "assets/bloodlink-logo.png";
+  };
+  const readMinutes = value => {
+    const n = Number(value);
+    return Number.isFinite(n) ? Math.max(1, Math.min(120, Math.round(n))) : 3;
+  };
   function setMeta(selector, attr, value) {
     let el = document.querySelector(selector);
     if (!el) { el = document.createElement("meta"); const [kind, key] = selector.match(/\[(name|property)="([^"]+)"\]/).slice(1); el.setAttribute(kind, key); document.head.appendChild(el); }
@@ -75,10 +86,10 @@
   const blogCard = blog => `
     <article class="blog-card">
       <a href="blog.html?slug=${encodeURIComponent(blog.slug)}" aria-label="${escapeHTML(textOf(blog.title))}">
-        <img class="card-image" src="${escapeHTML(blog.image)}" alt="${escapeHTML(textOf(blog.imageAlt) || textOf(blog.title))}" loading="lazy" decoding="async" onerror="this.style.display='none'">
+        <img class="card-image" src="${escapeHTML(safeImageURL(blog.image))}" alt="${escapeHTML(textOf(blog.imageAlt) || textOf(blog.title))}" loading="lazy" decoding="async" onerror="this.style.display='none'">
       </a>
       <div class="card-body">
-        <div class="card-meta"><span class="category-label">${escapeHTML(textOf(blog.category))}</span><span>${escapeHTML(dateText(blog.date))}</span><span>· ${blog.readMinutes} ${escapeHTML(t("minRead"))}</span></div>
+        <div class="card-meta"><span class="category-label">${escapeHTML(textOf(blog.category))}</span><span>${escapeHTML(dateText(blog.date))}</span><span>· ${readMinutes(blog.readMinutes)} ${escapeHTML(t("minRead"))}</span></div>
         <h3 class="card-title"><a href="blog.html?slug=${encodeURIComponent(blog.slug)}">${escapeHTML(textOf(blog.title))}</a></h3>
         <p class="card-excerpt">${escapeHTML(textOf(blog.excerpt))}</p>
         <a class="read-link" href="blog.html?slug=${encodeURIComponent(blog.slug)}">${escapeHTML(t("read"))} <span>→</span></a>
@@ -158,9 +169,9 @@
     setSEO(`${title} | BloodLink Blog`, description, absoluteURL(blog.ogImage || blog.image || config.ogImage), articleURL);
     const body = blog.body?.[language] || blog.body?.en || [];
     target.innerHTML = `
-      <img class="article-hero-image" src="${escapeHTML(blog.image)}" alt="${escapeHTML(textOf(blog.imageAlt) || title)}" decoding="async" onerror="this.style.display='none'">
+      <img class="article-hero-image" src="${escapeHTML(safeImageURL(blog.image))}" alt="${escapeHTML(textOf(blog.imageAlt) || title)}" decoding="async" onerror="this.style.display='none'">
       <header class="article-header">
-        <div class="card-meta"><span class="category-label">${escapeHTML(textOf(blog.category))}</span><span>${escapeHTML(t("published"))} ${escapeHTML(dateText(blog.date))}</span><span>· ${blog.readMinutes} ${escapeHTML(t("minRead"))}</span></div>
+        <div class="card-meta"><span class="category-label">${escapeHTML(textOf(blog.category))}</span><span>${escapeHTML(t("published"))} ${escapeHTML(dateText(blog.date))}</span><span>· ${readMinutes(blog.readMinutes)} ${escapeHTML(t("minRead"))}</span></div>
         <h1>${escapeHTML(title)}</h1>
         <p class="article-subtitle">${escapeHTML(textOf(blog.excerpt))}</p>
       </header>

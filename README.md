@@ -29,8 +29,8 @@ This README is the main guide for editing, publishing, measuring, and maintainin
 
 ```text
 BloodLink-Blog/
-├── index.html       Homepage, article list, homepage SEO metadata, Analytics snippet
-├── blog.html        Shared template for individual article URLs
+├── index.html       Homepage, article list, and homepage SEO metadata
+├── blog.html        Shared template for individual article URLs and dynamic metadata
 ├── 404.html         Custom not-found page (supported by GitHub Pages)
 ├── privacy.html     Privacy policy page
 ├── sitemap.xml      List of public URLs for search engines
@@ -40,7 +40,8 @@ BloodLink-Blog/
 ├── js/
 │   ├── config.js    Website settings: URL, Analytics ID, report email, language
 │   ├── articles.js  All published blog articles (edit this for normal publishing)
-│   └── app.js       Search, filters, menu, language, rendering, page metadata
+│   ├── analytics.js Loads GA4 only when a real Measurement ID is configured
+│   └── app.js       Search, filters, menu, language, rendering, and article metadata
 ├── assets/
 │   └── bloodlink-logo.png
 ├── ARTICLE-TEMPLATE.js  Copy-and-paste starter template for new articles
@@ -310,7 +311,7 @@ reportEmail: "bloodlink@example.com",
 defaultLanguage: "en",
 ```
 
-Change these to the real deployed website URL, public share image, Google Analytics Measurement ID, and support email. Keep the quotes and commas. The Analytics ID is also written directly in the HTML pages in this version, so follow Section 12 and update each page as described there.
+Change these to the real deployed website URL, public share image, Google Analytics Measurement ID, and support email. Keep the quotes and commas. Analytics is loaded by `js/analytics.js` from this single setting; you do not need to edit every HTML page.
 
 ### What are `siteUrl` and `ogImage`?
 
@@ -483,7 +484,7 @@ Official help: https://support.google.com/webmasters/
 
 ## 12. Google Analytics 4
 
-Google Analytics (GA4) measures website usage, such as visits and page views. **The code currently contains a placeholder ID (`G-XXXXXXXXXX`), so real tracking will not work until you replace it with your own Measurement ID.** Do not use someone else's Analytics ID.
+Google Analytics (GA4) measures website usage, such as visits and page views. **The default ID is a placeholder (`G-XXXXXXXXXX`), so tracking remains off until you replace it with your own Measurement ID in `js/config.js`.** Do not use someone else's Analytics ID.
 
 ### A. Create an Analytics account and property
 
@@ -501,22 +502,17 @@ Google's setup instructions can change: https://support.google.com/analytics/
 
 ### B. Add the Measurement ID to this project
 
-This version has the GA snippet directly in these four HTML files:
+Analytics is configured once in `js/config.js` and loaded by `js/analytics.js` on the homepage, article page, and privacy page. The standalone 404 page does not load Analytics.
 
-- `index.html`
-- `blog.html`
-- `404.html`
-- `privacy.html`
-
-In each file, search for `G-XXXXXXXXXX` and replace **every occurrence** with your actual ID. Each file normally has the ID in both the script URL and the `gtag('config', ...)` call. Both must match. Do not paste your entire Google account details; only replace the placeholder ID.
-
-Also open `js/config.js` and change:
+Open `js/config.js` and replace only this value with your own ID:
 
 ```js
-googleAnalyticsId: "G-XXXXXXXXXX",
+googleAnalyticsId: "G-ABC1234567",
 ```
 
-to your same real ID. Keep the value in all locations consistent. Save all files and publish the changes.
+Use the exact Measurement ID shown in your GA4 Web data stream. `js/analytics.js` loads the Google script on the homepage, article page, and privacy page only when the ID has the expected format and is not the placeholder. You do not need to edit each HTML page. The custom 404 page deliberately does not load Analytics so its standalone error screen stays lightweight.
+
+Save `js/config.js`, commit the changes, and publish the website. No other file needs its own Measurement ID.
 
 ### C. Test Analytics
 
@@ -547,16 +543,11 @@ Never claim the site does not use analytics after you have enabled GA4. Keep the
 
 ## 13. 404 page and privacy policy
 
-### Custom 404 page and offline mini-games
+### Custom 404 page and offline game
 
 `404.html` is the themed error page for visitors who request a page that does not exist. GitHub Pages serves a root `404.html` for missing pages. Test it after publishing by opening a made-up path such as `https://YOUR-REAL-DOMAIN/this-page-should-not-exist`. Some local preview servers may show their own error page instead.
 
-The 404 page also includes two small games that run locally in the browser without game libraries or network requests:
-
-- **Blood Drop Catch:** tap/click the falling blood drops before the timer ends. Use Start/Restart to play again.
-- **Blood Group Memory:** flip cards and find matching blood-group symbols. Match all pairs to finish.
-
-The game code and styles are inside `404.html`, so you do not need to install anything or upload additional game files. The games are for entertainment only and do not provide medical advice. Test the games on both mobile and desktop after publishing.
+The 404 page includes one small offline game: **BloodLink Rescue Rush**. Move the tray with the on-screen left/right buttons or keyboard arrow keys, catch red drops for points, and avoid green sample-warning markers. It runs locally in the browser without a game library and does not upload scores. Test the game on both mobile and desktop after publishing.
 
 ### Privacy policy
 
@@ -630,7 +621,7 @@ Use this list before publishing a change:
 - [ ] The canonical and social preview URLs use the real public domain.
 - [ ] `sitemap.xml` includes new public articles and excludes removed ones.
 - [ ] `robots.txt` points to the correct sitemap URL.
-- [ ] Google Analytics ID is correct and consistent across the four HTML files and `js/config.js`.
+- [ ] Google Analytics Measurement ID is correct in `js/config.js`; `js/analytics.js` is included on the homepage, article page, and privacy page.
 - [ ] Privacy policy reflects the actual analytics and data practices.
 - [ ] The custom 404 page works on the deployed host.
 - [ ] Changes are uploaded and the live website has been tested.
@@ -652,85 +643,55 @@ Use this list before publishing a change:
 **Owner's rule:** If you change the public domain, update `siteUrl` and `ogImage` in `js/config.js`, the canonical and social metadata in the HTML files, every URL in `sitemap.xml`, the sitemap address in `robots.txt`, and the URL configured in Google Analytics/Search Console.
 
 
-## 17. 404 page: styling, logo, links, and mini-games
+## 17. 404 page: one game, navigation, and troubleshooting
 
-The `404.html` page is now **self-contained**: its layout and game styles are written inside that file, so it does not rely on `css/style.css` loading correctly. The BloodLink logo is embedded directly in the HTML as an image data URL, preventing a broken logo path on the error page. The page links back to the homepage and to `privacy.html`; the two mini-games run locally in the browser and do not need an external game library.
+`404.html` is self-contained for styling and logo display, so it does not depend on the shared stylesheet. It includes **one game only**, BloodLink Rescue Rush, using the website's red, white, pale-blue, and green palette. The game is local to the browser; scores are not uploaded.
 
-### If your GitHub Pages site is at the domain root
+### Navigation on the 404 page
 
-For a site like `https://suchock.github.io/`, leave this setting in `404.html` as:
+- The arrow at the top left uses browser history when the visitor came from the same site; when opened directly, it falls back to the homepage.
+- **Back to BloodLink Blog** is the main homepage action.
+- **Privacy Policy** is in the footer.
+- The extra Home button was removed to avoid duplicate homepage actions.
 
-```js
-const SITE_BASE_PATH = '';
-```
+The current public site is expected at `https://suchock.github.io/`, so its base path is the domain root. If you later publish under a project subfolder such as `https://username.github.io/repository-name/`, update the `MANUAL_BASE_PATH` constant in `404.html` and test the links again.
 
-### If your site is in a repository subfolder
+### Test after publishing
 
-For a project URL like `https://username.github.io/my-blog/`, set it to the repository path (include the leading slash, but not a trailing slash):
+1. Confirm `404.html` is beside `index.html` in the published root.
+2. Open a made-up URL on the live site.
+3. Confirm the logo and styling appear.
+4. Test the top-left arrow, the main red homepage button, and Privacy Policy.
+5. Start Rescue Rush; try the on-screen controls on a phone and arrow keys on a computer.
+6. On desktop, inspect DevTools → Network to check that the missing document returns HTTP 404.
 
-```js
-const SITE_BASE_PATH = '/my-blog';
-```
+## 18. Final UI, mobile and security checklist
 
-This setting updates the 404 page's Home links. The rest of the site's pages and metadata should also use the correct project path if you publish under a repository subfolder.
+### Article preview design
 
-### Test the page after publishing
+Article cards use a medium preview: title is limited to two lines, summary is clamped to three lines, metadata is compact, and the Read article link stays near the bottom. On narrow phones, cards become a compact horizontal layout so the list remains scannable. Full article content is still available after opening an article. If you want longer or shorter previews, edit `.card-title` and `.card-excerpt` rules near the end of `css/style.css`.
 
-1. Confirm `404.html` is in the same published root as `index.html`.
-2. Open a deliberately nonexistent URL on the live site.
-3. Confirm the red header, logo, background, cards, and footer are styled even if `css/style.css` is unavailable.
-4. Click **Back to BloodLink Blog** and **Privacy Policy** to check the links.
-5. Start Blood Drop Catch and tap the drop; restart Blood Group Memory and match the pairs.
-6. On a computer, inspect the main document's HTTP status in DevTools → Network. A proper not-found response should normally return status `404`.
+### Google Analytics safety
 
-If the logo is changed in the main site later, replace the embedded image in `404.html` too, or ask for the 404 page to be regenerated with the new logo.
+`js/analytics.js` loads Google Analytics only when `googleAnalyticsId` in `js/config.js` is changed from `G-XXXXXXXXXX` to a real GA4 ID. With the placeholder unchanged, the site does not request the Analytics script. Update `privacy.html` to describe Analytics accurately before enabling it, and add a consent mechanism if your legal obligations require one.
 
+### Security notes and limits
 
-## 404 mini-game: BloodLink Rescue Rush
+- This is a static website. Do not put passwords, private API keys, donor records, or other secrets in HTML/JavaScript; every published file is public.
+- Article text is HTML-escaped before rendering. Only add article content you trust, and never paste raw HTML or executable JavaScript into article data.
+- Use HTTPS image URLs or local files inside `assets/`. Avoid unknown third-party scripts and untrusted embeds.
+- Keep GitHub account two-factor authentication enabled and review repository collaborators before publishing.
+- Do not collect health information or donor contact information through this blog unless you have a secure, properly reviewed system and a clear privacy/legal basis.
+- Keep the privacy policy consistent with actual services (Analytics, contact links, embeds, forms). A template is not legal advice.
+- The project has been checked for common local syntax and UI issues, but no automated check can guarantee the whole site is bug-free or legally compliant. Test the deployed site on real devices and inspect browser Console/Network after every release.
 
-The first game on `404.html` is now **BloodLink Rescue Rush**, replacing the simple tap-the-drop game. Start a 30-second round, move the BloodLink basket left/right using the arrow keys or on-screen controls, catch red blood drops (+10 points), and avoid green germs (lose one of three lives). The game is drawn on a local HTML canvas and uses no external libraries or network requests. The second Blood Group Memory game remains available.
+### Release test checklist
 
-To adjust the game, edit the first game markup, the `.rescue-*` CSS rules, or the `BloodLink Rescue Rush` JavaScript section inside `404.html`. Keep the element IDs consistent (`rescue-start`, `rescue-canvas`, `rescue-status`, `rescue-left`, `rescue-right`, and `rescue-arena`). After changes, test on both a phone and a computer.
-
-
-### 404 mini-game titles look blank or have low contrast
-
-The game title bars in `404.html` use white text on the BloodLink red background. Keep `.game-card h3` text color as `#fff` and its background as `#c90012`. Avoid adding a later `.game-card h3` rule that changes the text to red, because it will override the contrast styling. On mobile, the heading margin is adjusted to match the card's smaller padding.
-
-
-## 17. Fixing 404 page navigation (Back, Home, and Privacy Policy)
-
-The 404 page uses three different navigation behaviours:
-
-- **Back arrow (←):** returns to the previous page when the visitor arrived from the same website. If the visitor opened the 404 page directly, the arrow falls back to the homepage.
-- **Home:** always opens the BloodLink Blog homepage.
-- **Back to BloodLink Blog:** also opens the homepage.
-- **Privacy Policy:** opens `privacy.html`.
-
-### Why links can fail on GitHub Pages
-
-A URL beginning with `/`, such as `/index.html`, points to the domain root. That works for a user site such as `https://suchock.github.io/`, but a project site hosted under `https://username.github.io/repository-name/` needs the repository prefix. The updated `404.html` rewrites the links to include the base path. It recognises `suchock.github.io` as a root site and attempts to detect the first path segment for other GitHub Pages project sites.
-
-### If your website is published in a subfolder
-
-Open `404.html` and find this line in its navigation script:
-
-```js
-const MANUAL_BASE_PATH = '';
-```
-
-For a project URL like `https://username.github.io/BloodLink-Blog/`, change it to:
-
-```js
-const MANUAL_BASE_PATH = '/BloodLink-Blog';
-```
-
-Use the exact repository path, with no trailing slash. For `https://suchock.github.io/`, leave it empty (`''`). Then commit the updated `404.html`.
-
-### Test all four links after publishing
-
-1. Open a fake URL on your live site so the 404 page appears.
-2. Click **Home** and **Back to BloodLink Blog**; both should open the homepage.
-3. Click **Privacy Policy** in the footer; it should open `privacy.html`.
-4. Open the fake URL by clicking a broken link from within your site, then click the arrow; it should return to the previous same-site page. If you type the fake URL directly, the arrow should take you to the homepage.
-5. If a link still fails, check the deployed URL and `MANUAL_BASE_PATH`, and confirm `index.html` and `privacy.html` exist in the published root.
+1. Open the homepage on a narrow phone and a desktop browser; check for horizontal scrolling.
+2. Search for an existing title and a phrase that should return no results; clear with the × button and Escape.
+3. Open every article, test English/Bangla switching, and verify image alt text.
+4. Test the menu, share action, report link, footer, and privacy page.
+5. Open a fake URL and confirm the custom 404 styling, browser-back behavior, homepage button, Privacy Policy link, and the single Rescue Rush game.
+6. With the GA placeholder, confirm no request to `googletagmanager.com` occurs. If Analytics is enabled, verify the ID and test in GA4 Realtime.
+7. Check that `sitemap.xml` contains only real public pages and that `robots.txt` points to the correct sitemap.
+8. Wait for GitHub Pages deployment, then hard-refresh and test the public website.
